@@ -1,0 +1,40 @@
+name: ${name}
+main: ${groupId}.${artifactId}.BukgetPlugin
+version: ${version}
+authors: [bklw,darthsimon123]
+description: This plugin allows admins to install new bukkit plugins from within Minecraft. It connects to bukget.org, hence the name. The command is structured with /get as the main command and has subcommands for specific actions, similar to apt-get on Debian/Ubuntu.
+
+commands:
+    get:
+        description: The Get Command has subcommands that control features of the Get Plugin.
+        usage: "Syntax: /get command [parameters]"
+        
+permissions:
+    get.*:
+        description: Gives access to all Bukkit Get subcommands
+        children:
+            get.install: true
+            get.remove: true
+            get.list: true
+            get.info: true
+            get.settings: true
+            
+    get.install:
+        description: Gives access to the install subcommand
+        default: op
+        
+    get.remove:
+        description: Gives access to the remove subcommand
+        default: op
+        
+    get.list:
+        description: Gives access to the list subcommand
+        default: op
+        
+    get.info:
+        description: Gives access to the install subcommand
+        default: op
+        
+    get.settings:
+        description: Gives access to the settings subcommand
+        default: op
