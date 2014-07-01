@@ -113,16 +113,16 @@ public class PluginUtils {
 		//
 		sender.sendMessage(String.format(GetConfig.Localization.installingPlugin, plgInfo.plugin_name));
 		//
+		PluginVersion reqVersion = plgInfo.getVersionBySlug(requestedVersion);
+		//
 		// if the plugin has no versions, give a warning and continue happily!
-		if (plgInfo.versions.length < 1) {
+		if (plgInfo.versions.length < 1 || reqVersion == null) {
 			sender.sendMessage(String.format(GetConfig.Localization.noVersionFound, plgInfo.plugin_name));
 			return false;
 		}
 		
-		PluginVersion reqVersion = plgInfo.getVersionBySlug(requestedVersion);
-		
 		//Check if this plugin's URL is from dev.bukkit.org
-		if(! (reqVersion.download.startsWith("http://dev.bukkit.org/media/files"))) {
+		if(!(reqVersion.download.startsWith("http://dev.bukkit.org/media/files"))) {
 			sender.sendMessage(String.format(GetConfig.Localization.urlNotAllowed, reqVersion.filename));
 			return false;
 		}
