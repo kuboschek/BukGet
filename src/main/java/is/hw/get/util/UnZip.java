@@ -12,13 +12,6 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-/*****************************************************************************************************************
-This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License.
-To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/3.0/.
-
-Simon Tümmler, Leonhard Kuboschek 2013
-******************************************************************************************************************/
-
 public class UnZip {
 	public static String unzipFileToString(File zipfile, String entryName) throws ZipException, IOException {
 		ZipFile zipFile = new ZipFile(zipfile);

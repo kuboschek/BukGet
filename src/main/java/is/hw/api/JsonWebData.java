@@ -1,14 +1,20 @@
 package is.hw.api;
 
+import is.hw.get.util.HttpUtils;
+
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.fluent.Request;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -17,7 +23,6 @@ public class JsonWebData {
 	private transient String url;	
 	private transient boolean isAnnotated;
 	private transient List<NameValuePair> params;
-	private transient final static String user_agent = "Bukkit Get Plugin / 7 (Plugin for the Minecraft Bukkit server)";
 	public transient boolean executed = false;
 	
 	
@@ -64,10 +69,10 @@ public class JsonWebData {
 		if (params != null) {
 			urlQuery = URLEncodedUtils.format(params, "UTF-8");
 		}
-		String content = Request.Get(url + "?" + urlQuery)
-								.userAgent(user_agent)
-								.execute()
-								.returnContent().asString();
+		HttpClient client = HttpUtils.getDefaultHttpClient();
+		HttpGet get = new HttpGet(url + "?" + urlQuery);
+		HttpResponse response = client.execute(get);
+		InputStreamReader responseReader = new InputStreamReader(response.getEntity().getContent());
 		//
 		// verf�gt diese Klasse �ber ein (oder mehrere) annotierte Felder, in die die Daten sollen?
 		if (isAnnotated) {
@@ -75,7 +80,7 @@ public class JsonWebData {
 			for (Field f : this.getClass().getDeclaredFields()) {
 				if (f.isAnnotationPresent(JsonWebContent.class)) {
 					// deserialisiere die Daten
-					Object data = gson.fromJson(content, f.getType());
+					Object data = gson.fromJson(responseReader, f.getType());
 					// und speichere sie da rein.
 					f.set(this, data);
 				}
@@ -88,7 +93,7 @@ public class JsonWebData {
 								.registerTypeAdapter(getClass(), new JsonWebDeserializer(this))
 								.create();
 			// das passiert hier.
-			bukgetGson.fromJson(content, this.getClass());
+			bukgetGson.fromJson(responseReader, this.getClass());
 		}
 		//
 		

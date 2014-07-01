@@ -30,7 +30,6 @@ public class ConfigLoader {
 			
 			@Override
 			public boolean shouldSkipClass(Class<?> arg0) {
-				// TODO Auto-generated method stub
 				return false;
 			}
 		});

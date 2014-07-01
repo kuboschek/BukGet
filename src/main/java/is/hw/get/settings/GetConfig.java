@@ -23,13 +23,11 @@ public class GetConfig {
 		public static String remoteCmd = "remote";
 		
 		public static String remoteUrl = "http://hw.is:42324";
+		public static String http_user_agent = "Bukkit Get Plugin / 7 (Plugin for the Minecraft Bukkit server)";
 	}
 	
 	@SettingName(humanName="General")
 	public static class General {
-		@SettingName(humanName="Test")
-		public static String testSetting = "This is a test setting.";
-		
 		@SettingName(humanName="Get Name Color")
 		public static String getColor = ChatColor.BLUE + "";
 		
