@@ -12,7 +12,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.google.gson.Gson;
@@ -23,8 +26,27 @@ public class JsonWebData {
 	private transient String url;	
 	private transient boolean isAnnotated;
 	private transient List<NameValuePair> params;
+	
+	private transient boolean isPostRequest = false;
+	private transient String postData = "";
+	
 	public transient boolean executed = false;
 	
+	
+	/**
+	 * Wird von Subklassen aufgerufen um die URL und ähnliches bekannt zu geben
+	 * @param url Die API-URL dieses Typs
+	 * @param isAnnotated Ist das Datenfeld in der Klasse mit einer Annotation versehen (Arrays)? Sonst ist es die ganze Klasse
+	 * @param isPostRequest Gibt an, ob diese Anfrage ein POST oder ein GET ist.
+	 */
+	protected JsonWebData(String url, boolean isAnnotated, boolean isPostRequest) {
+		gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).create();
+		this.url = url;
+		this.isAnnotated = isAnnotated;
+		this.params = new ArrayList<NameValuePair>();
+		
+		this.isPostRequest = isPostRequest;
+	}
 	
 	/**
 	 * Wird von Subklassen aufgerufen um die URL und ähnliches bekannt zu geben
@@ -55,6 +77,16 @@ public class JsonWebData {
 		return this;
 	}
 	
+	/**
+	 * Ändert die beim POST übertragenen Daten auf {@code content}
+	 * @param postData Der an den Server zu sendende String
+	 * @return 
+	 */
+	public JsonWebData setPostData(String postData) {
+		this.postData = postData;
+		return this;
+	}
+	
 	public JsonWebData addParam(String name, String value) {
 		this.params.add(new BasicNameValuePair(name, value));
 		return this;
@@ -70,8 +102,20 @@ public class JsonWebData {
 			urlQuery = URLEncodedUtils.format(params, "UTF-8");
 		}
 		HttpClient client = HttpUtils.getDefaultHttpClient();
-		HttpGet get = new HttpGet(url + "?" + urlQuery);
-		HttpResponse response = client.execute(get);
+		
+		HttpRequestBase request;
+		
+		if(isPostRequest) {
+			request = new HttpGet(url + "?" + urlQuery);
+		} else {
+			HttpPost post = new HttpPost(url + "?" + urlQuery);
+			post.setEntity(new StringEntity(postData));
+			request = post;
+		}
+		
+		request.setHeader("Content-Type", "application/json");
+		
+		HttpResponse response = client.execute(request);
 		InputStreamReader responseReader = new InputStreamReader(response.getEntity().getContent());
 		//
 		// verf�gt diese Klasse �ber ein (oder mehrere) annotierte Felder, in die die Daten sollen?

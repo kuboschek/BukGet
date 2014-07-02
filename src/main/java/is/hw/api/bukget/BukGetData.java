@@ -5,6 +5,10 @@ import is.hw.api.JsonWebData;
 public class BukGetData extends JsonWebData {
 	public static transient String baseURL = "http://api.bukget.org/3/";
 	
+	public BukGetData(String url, boolean isAnnotated, boolean isPostRequest) {
+		super(baseURL + url, isAnnotated, isPostRequest);
+	}
+	
 	/**
 	 * Wird von Subklassen aufgerufen, um die URL und ähnliches bekannt zu geben
 	 * @param url Die API-URL dieses Typs
