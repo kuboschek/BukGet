@@ -91,6 +91,7 @@ public class InfoCommandExecutor implements TabExecutor, CacheUpdateInformable {
 	
 	@Override
 	public void onCacheUpdated(BukGetData updatedData) {
+		caching_started = true;
 		pluginNames.clear();
 		PluginListing plugins  = (PluginListing) updatedData;
 		for(PluginInfo p: plugins.plugins) {
