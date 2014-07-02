@@ -58,8 +58,6 @@ public class GetConfig {
 		public static String enabledMsg = "%s %s has been enabled.";
 		public static String disableMsg = "%s %s has been disabled.";
 		
-		public static String cacheRefreshedMsg = "Plugin cache renewed.";
-		
 		public static String selectSettingMsg = "Select a setting from category " + ChatColor.GREEN + "%s" + ChatColor.RESET + ": " + ChatColor.GREEN + "%s";
 		public static String selectedSettingMsg = "You have selected " + ChatColor.GREEN + "%s" + ChatColor.RESET + " from category " + ChatColor.GREEN + "%s" + ChatColor.RESET + ". ";
 		public static String currentSettingValueMsg = "The value of this setting is " + ChatColor.GREEN + "%s" + ChatColor.RESET + ". ";
@@ -74,6 +72,9 @@ public class GetConfig {
 		public static String noSuchPlugin = ChatColor.RED + "No such plugin: %s";
 		
 		public static String tooFewArguments = ChatColor.RED + "Too few arguments!";
+		
+		public static String noCache = ChatColor.RED + "The cache has not yet been initialised. Please wait a moment.";
+		public static String cacheRefreshedMsg = "Plugin cache renewed.";
 		
 		// Install Command Messages
 		public static String notAllowedMessage = ChatColor.RED + "You are not allowed to install that file!";

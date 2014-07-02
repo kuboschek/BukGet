@@ -31,6 +31,9 @@ public class RemoteCommandExecutor implements CommandExecutor {
 		case "connect":
 			connect(sender, args);
 			break;
+		case "disconnect":
+			disconnect(sender);
+			break;
 		case "register":
 			register(sender, args);
 			break;
@@ -75,7 +78,7 @@ public class RemoteCommandExecutor implements CommandExecutor {
 			showHelp(sender);
 			return;
 		}
-		sender.sendMessage(ChatColor.GREEN + "Started listening...");
+		sender.sendMessage(ChatColor.GREEN + "Started listener...");
 		// TODO: Generate Pubkey
 		rpc.startMessageListener(new JsonRPC.DataCallback() {
 			@Override
@@ -85,5 +88,10 @@ public class RemoteCommandExecutor implements CommandExecutor {
 			}
 		}, args[0]);
 		// TODO: Irgendwie empfangen
+	}
+	
+	private void disconnect(CommandSender sender) {
+		sender.sendMessage(ChatColor.GREEN + "Stopping listener...");
+		rpc.stopMessageListener();
 	}
 }

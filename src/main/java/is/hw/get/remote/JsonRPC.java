@@ -1,6 +1,7 @@
 package is.hw.get.remote;
 
 import is.hw.get.settings.GetConfig;
+import is.hw.get.util.HttpUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,7 +17,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.bukkit.Bukkit;
 
 public class JsonRPC  implements ResponseHandler<JsonResponse> {
 	public interface DataCallback {
@@ -31,7 +32,7 @@ public class JsonRPC  implements ResponseHandler<JsonResponse> {
 	
 	public JsonRPC() {
 		RequestConfig reqConfig = RequestConfig.custom().setConnectTimeout(0).setConnectionRequestTimeout(0).setSocketTimeout(0).build();
-		httpclient = HttpClientBuilder.create().setDefaultRequestConfig(reqConfig).build();
+		httpclient = HttpUtils.getNewHttpClient(reqConfig);
 	}
 	
 	public void startMessageListener(DataCallback callback, Object... params) {
@@ -89,6 +90,7 @@ public class JsonRPC  implements ResponseHandler<JsonResponse> {
 	private class MessageThread extends Thread {
 		private Object params[];
 		private DataCallback callback;
+		private int backoff_time = 500;
 		
 		public MessageThread(DataCallback callback, Object params[]) {
 			this.params = params;
@@ -99,9 +101,30 @@ public class JsonRPC  implements ResponseHandler<JsonResponse> {
 		public void run() {
 			while (!isInterrupted()) {
 				try {
-					callback.data(jsonCall("message", params));
-				} catch (IOException e) {
+					JsonResponse response = jsonCall("message", params);
+					if (response.error != null) {
+						// JSON-RPC returned an error
+						Bukkit.getServer().getLogger().warning("The server returned an error. Backing off.");
+						Bukkit.getServer().getLogger().warning(response.toJson());
+						backoff_time *= 2;
+						Thread.sleep(backoff_time);
+					} else {
+						callback.data(response);
+					}
+				} catch (IOException | InterruptedException e) {
+					if (isInterrupted() || e instanceof InterruptedException) {
+						return;
+					}
+					//
+					Bukkit.getServer().getLogger().warning("There was an error whilst waiting (or receiving) the response. Backing off.");
 					e.printStackTrace();
+					//
+					backoff_time *= 2;
+					try {
+						Thread.sleep(backoff_time);
+					} catch (InterruptedException e1) {
+						
+					}
 				}
 			}
 		}
