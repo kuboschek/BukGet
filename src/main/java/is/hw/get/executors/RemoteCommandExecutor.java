@@ -2,6 +2,8 @@ package is.hw.get.executors;
 
 import is.hw.get.remote.JsonRPC;
 import is.hw.get.remote.JsonResponse;
+import is.hw.get.remote.ScopedMessageCallback;
+import is.hw.get.remote.ScopedMessageRouter;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,8 +15,17 @@ import org.bukkit.command.CommandSender;
 
 public class RemoteCommandExecutor implements CommandExecutor {
 	private JsonRPC rpc = new JsonRPC();
+	private ScopedMessageRouter router = new ScopedMessageRouter();
 	
 	public RemoteCommandExecutor() {
+		router.registerScope("is.hw.get.remote", new ScopedMessageCallback() {
+			
+			@Override
+			public void message(String scope, String data) {
+				// TODO Auto-generated method stub
+				System.out.println("Got message: " + scope + ", Data: " + data);
+			}
+		});
 	}
 	
 	@Override
@@ -77,13 +88,7 @@ public class RemoteCommandExecutor implements CommandExecutor {
 		}
 		sender.sendMessage(ChatColor.GREEN + "Started listening...");
 		// TODO: Generate Pubkey
-		rpc.startMessageListener(new JsonRPC.DataCallback() {
-			@Override
-			public void data(JsonResponse data) {
-				System.out.println("Got data:");
-				System.out.println(data.toJson());
-			}
-		}, args[0]);
+		rpc.startMessageListener(router, args[0]);
 		// TODO: Irgendwie empfangen
 	}
 }
