@@ -23,8 +23,9 @@ import org.bukkit.command.TabExecutor;
 
 public class InfoCommandExecutor implements TabExecutor, CacheUpdateInformable {
 	
-	Set<String> pluginNames;
-	GetPlugin plg;
+	private Set<String> pluginNames;
+	private GetPlugin plg;
+	private boolean caching_started = false;
 	
 	public InfoCommandExecutor(GetPlugin plug) {
 		pluginNames = new HashSet<String>();
@@ -39,6 +40,11 @@ public class InfoCommandExecutor implements TabExecutor, CacheUpdateInformable {
 			sender.sendMessage("This is Get v" + plg.getDescription().getVersion() + "!");
 			return true;
 		}
+		
+		if (!caching_started) {
+			sender.sendMessage(GetConfig.Localization.noCache);
+			return true;
+		}
 
 		if(pluginExists(args[0])) {
 			PluginInfo info = new PluginInfo(args[0], GetConfig.General.standardFields, 2);
@@ -48,8 +54,6 @@ public class InfoCommandExecutor implements TabExecutor, CacheUpdateInformable {
 				//
 				
 				ChatFormatter.sendChatSection(sender, new PluginInfoChatSection(info));
-				
-				
 			} catch (Exception e) {
 				e.printStackTrace();
 				sender.sendMessage(ChatColor.RED + "There was an error getting the information.");
@@ -99,9 +103,6 @@ public class InfoCommandExecutor implements TabExecutor, CacheUpdateInformable {
 	}
 	
 	public Map<String, String> getPluginFieldDescription(Field field) {
-		
-		
-		
 		return null;
 	}
 }
