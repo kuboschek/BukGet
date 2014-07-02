@@ -24,6 +24,8 @@ public class GetConfig {
 		
 		public static String remoteUrl = "http://hw.is:42324";
 		public static String http_user_agent = "Bukkit Get Plugin / 7 (Plugin for the Minecraft Bukkit server)";
+		
+		public static int maxStashedMessages = 4096;
 	}
 	
 	@SettingName(humanName="General")
